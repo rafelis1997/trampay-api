@@ -2,5 +2,6 @@ import { Transaction } from '../entities/transaction';
 
 export abstract class TransactionsRepository {
   abstract createTransactions(transaction: Transaction): Promise<void>;
-  // abstract deleteTransactions(email: string): Promise<UserResponse>;
+  abstract getTransactionsTodayTransactions(): Promise<{ id: string }[]>;
+  abstract deleteTransactions(transactions: { id: string }[]): Promise<void>;
 }

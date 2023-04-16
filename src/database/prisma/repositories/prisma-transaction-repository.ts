@@ -5,16 +5,37 @@ import { PrismaService } from '../prisma.service';
 import { TransactionsRepository } from 'src/http/modules/user/repositories/transactions-repository';
 import { Transaction } from 'src/http/modules/user/entities/transaction';
 
-interface UserResponse {
-  id: string;
-  password: string;
-  email: string;
-  document: string;
-}
-
 @Injectable()
 export class PrismaTransactionRepository implements TransactionsRepository {
   constructor(private prismaService: PrismaService) {}
+
+  async deleteTransactions(transactions: { id: string }[]): Promise<void> {
+    for (const transaction of transactions) {
+      await this.prismaService.transaction.update({
+        data: {
+          deletedAt: new Date(),
+        },
+        where: {
+          id: transaction.id,
+        },
+      });
+    }
+  }
+
+  async getTransactionsTodayTransactions(): Promise<{ id: string }[]> {
+    const lastDay = Date.now() - 24 * 60 * 60 * 1000;
+    const lastDayString = new Date(lastDay).toISOString();
+
+    const transactions = await this.prismaService.transaction.findMany({
+      where: {
+        createdAt: {
+          gte: lastDayString,
+        },
+      },
+    });
+
+    return transactions;
+  }
 
   async createTransactions(transaction: Transaction): Promise<void> {
     const hasUser = await this.prismaService.user.findFirst({

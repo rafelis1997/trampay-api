@@ -38,7 +38,5 @@ export class UsersController {
     const csvData = csvFile.toString();
 
     await this.addTransactionsToUsers.execute(csvData);
-
-    await unlink('src/tmp/dummy.csv');
   }
 }

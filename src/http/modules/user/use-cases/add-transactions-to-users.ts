@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { TransactionsRepository } from '../repositories/transactions-repository';
 import { Transaction } from '../entities/transaction';
 import { parse } from 'papaparse';
+import { unlink } from 'fs/promises';
 
 @Injectable()
 export class AddTransactionsToUsers {
@@ -10,6 +11,13 @@ export class AddTransactionsToUsers {
 
   async execute(request: string) {
     const csvData = request;
+
+    const lastDayTransactions =
+      await this.transactionRepository.getTransactionsTodayTransactions();
+
+    if (lastDayTransactions) {
+      await this.transactionRepository.deleteTransactions(lastDayTransactions);
+    }
 
     const transactions: {
       data: { document: string; balance: string }[];
@@ -25,7 +33,10 @@ export class AddTransactionsToUsers {
         userDocument: transaction.document,
         balance: Number(transaction.balance),
       });
+
       await this.transactionRepository.createTransactions(newTransaction);
     }
+
+    await unlink('src/tmp/dummy.csv');
   }
 }
