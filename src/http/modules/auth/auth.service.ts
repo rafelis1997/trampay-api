@@ -12,7 +12,7 @@ export class AuthService {
   ) {}
 
   async signIn(email: string, pass: string): Promise<any> {
-    const user = await this.userRepository.get(email);
+    const user = await this.userRepository.getUser(email);
 
     if (!user) {
       throw new Error('Email/password are incorrect');
@@ -25,6 +25,7 @@ export class AuthService {
     }
 
     const payload = { username: user.email, sub: user.id };
+
     return {
       access_token: await this.jwtService.signAsync(payload),
     };

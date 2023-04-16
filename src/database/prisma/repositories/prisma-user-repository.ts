@@ -15,7 +15,7 @@ interface UserResponse {
 export class PrismaUserRepository implements UserRepository {
   constructor(private prismaService: PrismaService) {}
 
-  async get(email: string): Promise<UserResponse> {
+  async getUser(email: string): Promise<UserResponse> {
     const user = await this.prismaService.user.findUniqueOrThrow({
       where: {
         email,
@@ -25,7 +25,7 @@ export class PrismaUserRepository implements UserRepository {
     return user;
   }
 
-  async create(user: User): Promise<void> {
+  async createUser(user: User): Promise<void> {
     await this.prismaService.user.create({
       data: {
         id: user.id,

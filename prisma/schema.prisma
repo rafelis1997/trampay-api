@@ -23,7 +23,7 @@ model User {
 model Transaction {
   id           String    @id
   user         User      @relation(fields: [userDocument], references: [document])
-  balance      String
+  balance      Int
   userDocument String
   createdAt    DateTime  @default(now())
   deletedAt    DateTime?

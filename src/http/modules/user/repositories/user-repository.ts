@@ -8,6 +8,6 @@ interface UserResponse {
 }
 
 export abstract class UserRepository {
-  abstract create(user: User): Promise<void>;
-  abstract get(email: string): Promise<UserResponse>;
+  abstract createUser(user: User): Promise<void>;
+  abstract getUser(email: string): Promise<UserResponse>;
 }
