@@ -11,6 +11,12 @@ interface UserResponse {
   document: string;
 }
 
+interface UserByIdResponse {
+  email: string;
+  document: string;
+  balance: number;
+}
+
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
   constructor(private prismaService: PrismaService) {}
@@ -23,6 +29,37 @@ export class PrismaUserRepository implements UserRepository {
     });
 
     return user;
+  }
+
+  async getUserById(id: string): Promise<UserByIdResponse> {
+    const user = await this.prismaService.user.findUniqueOrThrow({
+      include: {
+        transaction: {
+          where: {
+            deletedAt: null,
+          },
+          select: {
+            balance: true,
+          },
+        },
+      },
+      where: {
+        id,
+      },
+    });
+
+    const userBalance = user.transaction.reduce(
+      (acc, cur) => (acc += cur.balance),
+      0,
+    );
+
+    const sumUser = {
+      email: user.email,
+      document: user.document,
+      balance: userBalance,
+    };
+
+    return sumUser;
   }
 
   async createUser(user: User): Promise<void> {

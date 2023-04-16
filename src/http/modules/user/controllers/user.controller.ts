@@ -1,17 +1,28 @@
-import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { readFileSync } from 'fs';
 
 import { CreateUser } from 'src/http/modules/user/use-cases/create-user';
 import { CreateUserBody } from '../dtos/CreateUserBody';
-import { readFileSync } from 'fs';
 import { AddTransactionsToUsers } from '../use-cases/add-transactions-to-users';
-import { unlink } from 'fs/promises';
+import { GetUserById } from '../use-cases/get-user-by-id';
+import { AuthGuard } from '../../auth/auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private createUserCase: CreateUser,
+    private getByIdUser: GetUserById,
     private addTransactionsToUsers: AddTransactionsToUsers,
   ) {}
 
@@ -38,5 +49,15 @@ export class UsersController {
     const csvData = csvFile.toString();
 
     await this.addTransactionsToUsers.execute(csvData);
+  }
+
+  @Get(':id')
+  @UseGuards(AuthGuard)
+  async GetUser(
+    @Param() params: { id: string },
+  ): Promise<{ email: string; document: string; balance: number }> {
+    const user = await this.getByIdUser.execute(params);
+
+    return user;
   }
 }

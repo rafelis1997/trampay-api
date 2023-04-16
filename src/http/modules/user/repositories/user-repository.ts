@@ -7,7 +7,14 @@ interface UserResponse {
   document: string;
 }
 
+interface UserByIdResponse {
+  email: string;
+  document: string;
+  balance: number;
+}
+
 export abstract class UserRepository {
   abstract createUser(user: User): Promise<void>;
   abstract getUser(email: string): Promise<UserResponse>;
+  abstract getUserById(id: string): Promise<UserByIdResponse>;
 }
