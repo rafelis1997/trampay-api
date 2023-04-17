@@ -11,11 +11,13 @@ datasource db {
 }
 
 model User {
-  id          String        @id
-  email       String        @unique
-  password    String
-  document    String        @unique
-  transaction Transaction[]
+  id               String        @id
+  email            String        @unique
+  password         String
+  document         String        @unique
+  recoverPassToken String?       @unique
+  recoverPassExp   DateTime?
+  transaction      Transaction[]
 
   @@map("users")
 }

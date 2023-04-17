@@ -23,7 +23,7 @@ export class PrismaTransactionRepository implements TransactionsRepository {
   }
 
   async getTransactionsTodayTransactions(): Promise<{ id: string }[]> {
-    const lastDay = Date.now() - 24 * 60 * 60 * 1000;
+    const lastDay = Date.now() - 24 * 60 * 60 * 1000; // 1 day back from now
     const lastDayString = new Date(lastDay).toISOString();
 
     const transactions = await this.prismaService.transaction.findMany({
