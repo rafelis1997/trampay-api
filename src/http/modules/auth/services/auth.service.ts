@@ -70,7 +70,7 @@ export class AuthService {
 
     await this.userRepository.setRecoverPasswordToken(token, user.email);
 
-    return `http://localhost:3000/users/recoverPassword/${hashedToken}`; //should be sent to user email (but for this challenge will be returned call)
+    return `http://localhost:3000/reset-password/${hashedToken}`; //should be sent to user email (but for this challenge will be returned call)
   }
 
   async changePasswordRequest(token: string, password: string): Promise<void> {
@@ -80,8 +80,10 @@ export class AuthService {
       };
       await this.userRepository.alterUserPassword(decodedToken.token, password);
     } catch (error) {
-      console.log(error);
-      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        `Bad request ${error?.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 

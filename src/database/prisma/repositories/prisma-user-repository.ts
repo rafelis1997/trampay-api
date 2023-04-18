@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import * as dayjs from 'dayjs';
 import * as bcrypt from 'bcrypt';
 
@@ -23,30 +28,38 @@ interface UserByIdResponse {
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
   constructor(private prismaService: PrismaService) {}
-  async alterUserPassword(token: string, password: string): Promise<void> {
-    const isValid = await this.checkRecoverPasswordToken(token);
 
-    if (typeof isValid !== 'number') {
+  async alterUserPassword(token: string, password: string): Promise<void> {
+    try {
+      const isUserTokenValidResponse = await this.checkRecoverPasswordToken(
+        token,
+      );
+
       const hashedPassword = await bcrypt.hash(password, 10);
       await this.prismaService.user.update({
         data: {
           password: hashedPassword,
+          recoverPassToken: null,
+          recoverPassExp: null,
         },
         where: {
-          id: isValid.id,
+          id: isUserTokenValidResponse.id,
         },
       });
-      return;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Link expirado ou inválido',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-
-    throw new Error('Not possible to alter user password');
   }
 
   async setRecoverPasswordToken(
     token: string,
     userEmail: string,
   ): Promise<void> {
-    const expDate = Date.now() + 15 * 60 * 1000; // 15 minutes forward from now
+    const expDate = dayjs().add(15, 'minutes').toDate(); // 15 minutes forward from now
     const expDateString = new Date(expDate).toISOString();
 
     try {
@@ -66,8 +79,8 @@ export class PrismaUserRepository implements UserRepository {
 
   private async checkRecoverPasswordToken(
     token: string,
-  ): Promise<number | { id: string }> {
-    const hasFoundToken = await this.prismaService.user.findFirst({
+  ): Promise<{ id: string }> {
+    const hasFoundToken = await this.prismaService.user.findFirstOrThrow({
       select: {
         id: true,
         recoverPassToken: true,
@@ -79,14 +92,11 @@ export class PrismaUserRepository implements UserRepository {
       },
     });
 
-    if (!hasFoundToken) {
-      return -1;
+    const isExpired = dayjs().isAfter(hasFoundToken.recoverPassExp);
+
+    if (isExpired) {
+      throw new Error('Token expired');
     }
-
-    const isExpired =
-      dayjs(new Date()).minute() > dayjs(hasFoundToken.recoverPassExp).minute();
-
-    if (isExpired) return -1;
 
     return { id: hasFoundToken.id };
   }

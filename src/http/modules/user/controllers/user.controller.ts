@@ -4,20 +4,24 @@ import {
   Get,
   Param,
   Post,
-  Query,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { readFileSync } from 'fs';
+import { ApiTags } from '@nestjs/swagger';
+import { unlink } from 'fs/promises';
 
 import { CreateUser } from 'src/http/modules/user/use-cases/create-user';
 import { CreateUserBody } from '../dtos/CreateUserBody';
 import { AddTransactionsToUsers } from '../use-cases/add-transactions-to-users';
 import { GetUserById } from '../use-cases/get-user-by-id';
 import { AuthGuard } from '../../auth/auth.guard';
+import path from 'path';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(
@@ -34,6 +38,7 @@ export class UsersController {
   }
 
   @Post('transactions')
+  @UseGuards(AuthGuard)
   @UseInterceptors(
     FileInterceptor('file_asset', {
       storage: diskStorage({
@@ -42,13 +47,26 @@ export class UsersController {
           cb(null, file.originalname);
         },
       }),
+      fileFilter: (req, file, cb) => {
+        const filetypes = /([a-zA-Z0-9\s_\\.\-\(\):])+(.csv)$/i;
+        // Check ext
+        const extname = filetypes.test(file.originalname.toLowerCase());
+
+        if (extname) {
+          return cb(null, true);
+        } else {
+          return cb(null, false);
+        }
+      },
     }),
   )
-  async uploadUsersTransactions() {
-    const csvFile = readFileSync('src/tmp/dummy.csv');
+  async uploadUsersTransactions(@UploadedFile() file: Express.Multer.File) {
+    const csvFile = readFileSync(file.path);
     const csvData = csvFile.toString();
 
     await this.addTransactionsToUsers.execute(csvData);
+
+    await unlink(file.path);
   }
 
   @Get(':id')

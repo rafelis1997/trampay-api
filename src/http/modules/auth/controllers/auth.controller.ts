@@ -12,7 +12,9 @@ import {
 import { AuthService } from '../services/auth.service';
 import { SignInRequestBody } from '../signInRequestBody';
 import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}

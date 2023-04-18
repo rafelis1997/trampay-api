@@ -28,15 +28,29 @@ export class AddTransactionsToUsers {
       complete: (results) => results,
     });
 
+    const transactionsMap = new Map();
+
     for (const transaction of transactions.data) {
+      const hasUserBalanceMapped = transactionsMap.get(transaction.document);
+
+      if (!hasUserBalanceMapped) {
+        transactionsMap.set(transaction.document, Number(transaction.balance));
+        continue;
+      }
+
+      transactionsMap.set(
+        transaction.document,
+        Number(hasUserBalanceMapped) + Number(transaction.balance),
+      );
+    }
+
+    transactionsMap.forEach(async (balance, user) => {
       const newTransaction = new Transaction({
-        userDocument: transaction.document,
-        balance: Number(transaction.balance),
+        userDocument: user,
+        balance: Number(balance),
       });
 
       await this.transactionRepository.createTransactions(newTransaction);
-    }
-
-    await unlink('src/tmp/dummy.csv');
+    });
   }
 }
