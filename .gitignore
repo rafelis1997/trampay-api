@@ -37,3 +37,4 @@ lerna-debug.log*
 
 #DB
 *.db
+/db
