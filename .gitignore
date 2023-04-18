@@ -38,3 +38,6 @@ lerna-debug.log*
 #DB
 *.db
 /db
+
+# envorinment files
+.env
