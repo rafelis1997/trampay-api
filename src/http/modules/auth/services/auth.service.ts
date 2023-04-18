@@ -30,10 +30,15 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload = { username: user.email, sub: user.id };
+    const payload = { email: user.email, sub: user.id };
 
     return {
       access_token: await this.jwtService.signAsync(payload),
+      user: {
+        id: user.id,
+        email: user.email,
+        balance: user.balance,
+      },
     };
   }
 
@@ -77,6 +82,29 @@ export class AuthService {
     } catch (error) {
       console.log(error);
       throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async validateToken(
+    token: string,
+  ): Promise<
+    undefined | { email: string; balance: number; id: string; document: string }
+  > {
+    try {
+      const isValid: { email: string } = await this.jwtService.verifyAsync(
+        token,
+      );
+
+      const user = await this.userRepository.getUser(isValid.email);
+
+      return {
+        email: user.email,
+        balance: user.balance,
+        id: user.id,
+        document: user.document,
+      };
+    } catch (error) {
+      return undefined;
     }
   }
 }

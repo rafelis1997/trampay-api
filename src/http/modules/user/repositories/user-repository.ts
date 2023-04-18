@@ -5,6 +5,7 @@ interface UserResponse {
   password: string;
   email: string;
   document: string;
+  balance: number;
 }
 
 interface UserByIdResponse {

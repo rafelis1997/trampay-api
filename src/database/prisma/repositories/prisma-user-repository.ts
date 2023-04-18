@@ -11,6 +11,7 @@ interface UserResponse {
   password: string;
   email: string;
   document: string;
+  balance: number;
 }
 
 interface UserByIdResponse {
@@ -92,12 +93,35 @@ export class PrismaUserRepository implements UserRepository {
 
   async getUser(email: string): Promise<UserResponse> {
     const user = await this.prismaService.user.findUniqueOrThrow({
+      include: {
+        transaction: {
+          where: {
+            deletedAt: null,
+          },
+          select: {
+            balance: true,
+          },
+        },
+      },
       where: {
         email,
       },
     });
 
-    return user;
+    const userBalance = user.transaction.reduce(
+      (acc, cur) => (acc += cur.balance),
+      0,
+    );
+
+    const sumUser = {
+      id: user.id,
+      email: user.email,
+      document: user.document,
+      balance: userBalance,
+      password: user.password,
+    };
+
+    return sumUser;
   }
 
   async getUserById(id: string): Promise<UserByIdResponse> {
