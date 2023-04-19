@@ -19,7 +19,6 @@ import { CreateUserBody } from '../dtos/CreateUserBody';
 import { AddTransactionsToUsers } from '../use-cases/add-transactions-to-users';
 import { GetUserById } from '../use-cases/get-user-by-id';
 import { AuthGuard } from '../../auth/auth.guard';
-import path from 'path';
 
 @ApiTags('users')
 @Controller('users')

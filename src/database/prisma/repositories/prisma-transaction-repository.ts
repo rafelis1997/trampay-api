@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-import { User } from 'src/http/modules/user/entities/user';
 import { PrismaService } from '../prisma.service';
 import { TransactionsRepository } from 'src/http/modules/user/repositories/transactions-repository';
 import { Transaction } from 'src/http/modules/user/entities/transaction';

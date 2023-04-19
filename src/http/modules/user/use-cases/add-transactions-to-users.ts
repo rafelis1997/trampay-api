@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { TransactionsRepository } from '../repositories/transactions-repository';
 import { Transaction } from '../entities/transaction';
 import { parse } from 'papaparse';
-import { unlink } from 'fs/promises';
 
 @Injectable()
 export class AddTransactionsToUsers {
