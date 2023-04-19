@@ -24,6 +24,8 @@ Crie um arquivo .env na raiz do projeto e adicione as variáveis de ambiente nec
 
 
 ```
+CLIENT_URL="http://localhost:3000"
+
 DATABASE_URL="postgresql://postgres:docker@localhost:5432/postgres-db?schema=public"
 
 JWT_SECRET_KEY=place here a long jwt secret
