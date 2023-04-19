@@ -10,9 +10,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { readFileSync } from 'fs';
 import { ApiTags } from '@nestjs/swagger';
-import { unlink } from 'fs/promises';
+import { readFile, unlink } from 'fs/promises';
 
 import { CreateUser } from 'src/http/modules/user/use-cases/create-user';
 import { CreateUserBody } from '../dtos/CreateUserBody';
@@ -60,7 +59,7 @@ export class UsersController {
     }),
   )
   async uploadUsersTransactions(@UploadedFile() file: Express.Multer.File) {
-    const csvFile = readFileSync(file.path);
+    const csvFile = await readFile(file.path);
     const csvData = csvFile.toString();
 
     await this.addTransactionsToUsers.execute(csvData);
