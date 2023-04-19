@@ -14,6 +14,8 @@ async function bootstrap() {
   //Allow cookies manipulation on routes
   app.use(cookieParser());
 
+  app.enableCors();
+
   //Generate API documentations
   const config = new DocumentBuilder()
     .setTitle('Trampay Challenge API docs')
