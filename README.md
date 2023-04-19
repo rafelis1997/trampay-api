@@ -4,9 +4,9 @@ Este projeto faz parto do desafio para a vaga de Fullstack JR da empresa Trampay
 - [Trampay API](https://github.com/rafelis1997/trampay-api);
 - [Trampay Client](https://github.com/rafelis1997/trampay-client);
 
-Para testar localmente cada repositórios ambos devem ser clonados na sua máquina. O projeto Client pode ser
-acessado em produção pelo link [Trampay Client](https://trampay-client.vercel.app), porém este necessita que
-a API esteja rodando localmente.
+O projeto Client pode ser acessado em produção pelo link [Trampay Client](https://trampay-client.vercel.app)
+
+Para testar localmente cada repositório, ambos devem ser clonados na sua máquina.
 
 ## Para executar o projeto API localmente, siga os passos abaixo:
 
@@ -30,7 +30,8 @@ Se encontrar problemas ao executar o projeto, verifique se todas as dependência
 
 Clone o repositório para sua máquina local.
 Navegue até a pasta do projeto e instale as dependências usando npm install ou yarn.
-Certifique-se que o projeto [Trampay API](https://github.com/rafelis1997/trampay-api) esteja rodando na sua máquina
+Certifique-se que o projeto [Trampay API](https://github.com/rafelis1997/trampay-api) 
+esteja rodando na sua máquina, seguindo os passos acima
 Rode o comando: `npm start dev`.
 
 Se encontrar problemas ao executar o projeto você também pode entrar em contato comigo para obter suporte ou fazer perguntas.
