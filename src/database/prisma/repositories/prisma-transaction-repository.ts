@@ -3,16 +3,20 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { TransactionsRepository } from 'src/http/modules/user/repositories/transactions-repository';
 import { Transaction } from 'src/http/modules/user/entities/transaction';
+import * as dayjs from 'dayjs';
+import * as utc from 'dayjs/plugin/utc';
 
 @Injectable()
 export class PrismaTransactionRepository implements TransactionsRepository {
   constructor(private prismaService: PrismaService) {}
 
   async deleteTransactions(transactions: { id: string }[]): Promise<void> {
+    dayjs.extend(utc);
+
     for (const transaction of transactions) {
       await this.prismaService.transaction.update({
         data: {
-          deletedAt: new Date(),
+          deletedAt: dayjs().utc().toISOString(),
         },
         where: {
           id: transaction.id,
@@ -22,13 +26,16 @@ export class PrismaTransactionRepository implements TransactionsRepository {
   }
 
   async getTransactionsTodayTransactions(): Promise<{ id: string }[]> {
-    const lastDay = Date.now() - 24 * 60 * 60 * 1000; // 1 day back from now
-    const lastDayString = new Date(lastDay).toISOString();
+    dayjs.extend(utc);
+
+    const endOfDay = dayjs().utc().endOf('day').toISOString(); // 1 day back from now
+    const startOfDay = dayjs().utc().startOf('day').toISOString();
 
     const transactions = await this.prismaService.transaction.findMany({
       where: {
         createdAt: {
-          gte: lastDayString,
+          gte: startOfDay,
+          lte: endOfDay,
         },
       },
     });
