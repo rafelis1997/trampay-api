@@ -51,7 +51,7 @@ Rode o comando: `npm start dev`.
 
 Você pode acessar a aplicação no navegador em <http://localhost:3000/>
 
-Se encontrar problemas ao executar o projeto você também pode entrar em contato comigo para obter suporte ou fazer perguntas.
+Se encontrar problemas ao executar o projeto você também pode entrar em contato comigo para obter suporte ou fazer perguntas, tente também criar um arquivo na pasta root do projeto cliente com o nome `.env.local` e coloque nele os conteúdos do arquivo `.env`.
 
 ## Tecnologias utilizadas
 
