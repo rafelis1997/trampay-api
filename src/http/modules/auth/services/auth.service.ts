@@ -70,7 +70,7 @@ export class AuthService {
 
     await this.userRepository.setRecoverPasswordToken(token, user.email);
 
-    return `http://localhost:3000/reset-password/${hashedToken}`; //should be sent to user email (but for this challenge will be returned call)
+    return `${process.env.CLIENT_URL}/reset-password/${hashedToken}`; //should be sent to user email (but for this challenge will be returned call)
   }
 
   async changePasswordRequest(token: string, password: string): Promise<void> {
